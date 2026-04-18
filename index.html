@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fête des Voisins — 29 Mai</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  color: var(--color-text-primary, #1a1a18);
+  background: var(--color-background-secondary, #f5f5f2);
+  min-height: 100vh;
+}
+
+.app { max-width: 680px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  text-align: center; padding: 2.5rem 1.5rem 2rem;
+  background: var(--color-background-primary, #fff);
+  border: 0.5px solid var(--color-border-tertiary, #e0ded6);
+  border-radius: 12px; margin-bottom: 1.25rem;
+}
+.hero-badge {
+  display: inline-block; background: #EAF3DE; color: #3B6D11;
+  font-size: 12px; font-weight: 500; padding: 4px 14px;
+  border-radius: 20px; margin-bottom: 1rem; letter-spacing: 0.03em;
+}
+.hero h1 { font-size: 26px; font-weight: 500; margin-bottom: 0.4rem; }
+.hero .sub { font-size: 15px; color: var(--color-text-secondary, #666); margin-bottom: 1.5rem; }
+.countdown { display: flex; gap: 1.5rem; justify-content: center; }
+.cd-item { text-align: center; }
+.cd-num { font-size: 28px; font-weight: 500; color: #3B6D11; display: block; }
+.cd-label { font-size: 11px; color: var(--color-text-secondary, #666); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ── METRICS ──────────────────────────────────────────────── */
+.metrics {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px; margin-bottom: 1.25rem;
+}
+.metric {
+  background: var(--color-background-primary, #fff);
+  border: 0.5px solid var(--color-border-tertiary, #e0ded6);
+  border-radius: 8px; padding: 1rem; text-align: center;
+}
+.metric-num { font-size: 24px; font-weight: 500; color: #3B6D11; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary, #666); margin-top: 2px; }
+
+/* ── CARD ─────────────────────────────────────────────────── */
+.card {
+  background: var(--color-background-primary, #fff);
+  border: 0.5px solid var(--color-border-tertiary, #e0ded6);
+  border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;
+}
+.card-title {
+  font-size: 16px; font-weight: 500; margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: 8px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #639922; display: inline-block; flex-shrink: 0; }
+
+/* ── FORM BASE ────────────────────────────────────────────── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-row.full { grid-template-columns: 1fr; }
+.field label { display: block; font-size: 13px; color: var(--color-text-secondary, #666); margin-bottom: 6px; }
+.field input, .field textarea {
+  width: 100%; padding: 10px 13px; font-size: 14px;
+  background: #fff; border: 1.5px solid #c8c8c8;
+  border-radius: 8px; color: #1a1a18; font-family: inherit; outline: none; transition: border-color 0.15s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+.field input:focus, .field textarea:focus { border-color: #639922; box-shadow: 0 0 0 2px rgba(99,153,34,0.15); }
+.field textarea { resize: vertical; min-height: 70px; }
+
+/* ── ATTENDANCE TOGGLE ────────────────────────────────────── */
+.attend-toggle {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: 1.5px solid #c8c8c8; border-radius: 8px; overflow: hidden;
+  margin-bottom: 18px;
+}
+.attend-btn {
+  padding: 12px; text-align: center; cursor: pointer;
+  font-size: 14px; font-weight: 500; transition: all 0.15s;
+  background: #fafaf8; border: none; font-family: inherit;
+  color: var(--color-text-secondary, #666);
+}
+.attend-btn:first-child { border-right: 1px solid #c8c8c8; }
+.attend-btn.active-yes { background: #3B6D11; color: #fff; }
+.attend-btn.active-no  { background: #c0392b; color: #fff; }
+
+/* ── COUNTERS ─────────────────────────────────────────────── */
+.count-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.count-box {
+  background: #fafaf8; border: 1.5px solid #e0ded6;
+  border-radius: 8px; padding: 14px; text-align: center;
+}
+.count-box .count-lbl { font-size: 13px; color: var(--color-text-secondary,#666); margin-bottom: 10px; display: block; }
+.count-ctrl { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.count-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid #a0c070; background: #fff; color: #3B6D11;
+  font-size: 16px; font-weight: 600; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center; transition: all 0.13s;
+}
+.count-btn:hover { background: #3B6D11; color: #fff; border-color: #3B6D11; }
+.count-val { font-size: 22px; font-weight: 600; min-width: 28px; text-align: center; color: #3B6D11; }
+
+/* ── CATEGORIES GRID 3×2 ──────────────────────────────────── */
+.section-lbl {
+  font-size: 13px; color: var(--color-text-secondary, #666);
+  margin-bottom: 10px; display: block;
+}
+.cat-grid-big { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+.cat-card {
+  border: 1.5px solid #d0cec6; border-radius: 10px; background: #fff;
+  padding: 14px 8px; cursor: pointer; text-align: center;
+  transition: all 0.13s; position: relative; user-select: none;
+}
+.cat-card:hover { border-color: #a0c070; background: #f4faea; }
+.cat-card .cat-ico { font-size: 28px; display: block; margin-bottom: 6px; }
+.cat-card .cat-nm  { font-size: 12px; font-weight: 500; color: #444; line-height: 1.3; }
+.cat-card .cat-chk {
+  position: absolute; top: 6px; right: 6px;
+  width: 18px; height: 18px; background: #3B6D11; border-radius: 50%;
+  display: none; align-items: center; justify-content: center;
+  color: #fff; font-size: 10px; font-weight: 700;
+}
+
+/* Couleurs par catégorie */
+.cat-card.active-entree  { background: #EAF3DE; border-color: #3B6D11; }
+.cat-card.active-entree  .cat-nm { color: #3B6D11; }
+.cat-card.active-plat    { background: #FEF9E7; border-color: #B7950B; }
+.cat-card.active-plat    .cat-nm { color: #B7950B; }
+.cat-card.active-dessert { background: #FAEEDA; border-color: #854F0B; }
+.cat-card.active-dessert .cat-nm { color: #854F0B; }
+.cat-card.active-boisson { background: #E6F1FB; border-color: #185FA5; }
+.cat-card.active-boisson .cat-nm { color: #185FA5; }
+.cat-card.active-vaisselle { background: #F5EEF8; border-color: #7D3C98; }
+.cat-card.active-vaisselle .cat-nm { color: #7D3C98; }
+.cat-card.active-music   { background: #EEEDFE; border-color: #534AB7; }
+.cat-card.active-music   .cat-nm { color: #534AB7; }
+.cat-card[class*="active-"] .cat-chk { display: flex; }
+
+/* ── APPORT BLOCKS ────────────────────────────────────────── */
+.apport-block {
+  border: 1.5px solid #e0ded6; border-radius: 10px;
+  padding: 1rem; margin-bottom: 12px; background: #fafaf8;
+}
+.apport-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.apport-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary,#666); text-transform: uppercase; letter-spacing: 0.04em; }
+.remove-apport { background: none; border: none; color: #bbb; cursor: pointer; font-size: 16px; padding: 0 4px; }
+.remove-apport:hover { color: #888; }
+
+/* catégories dans les apport-blocks (2×3) */
+.apport-cat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
+.apport-cat-btn {
+  padding: 9px 6px; border: 1.5px solid #d0cec6; border-radius: 8px;
+  background: #fff; color: #555; font-size: 12px; cursor: pointer;
+  text-align: center; font-family: inherit; transition: all 0.13s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.apport-cat-btn:hover { border-color: #a0c070; background: #f4faea; }
+.apport-cat-btn .btn-ico { font-size: 18px; }
+.apport-cat-btn.active.c-entree   { background: #EAF3DE; border-color: #3B6D11; color: #3B6D11; }
+.apport-cat-btn.active.c-plat     { background: #FEF9E7; border-color: #B7950B; color: #B7950B; }
+.apport-cat-btn.active.c-dessert  { background: #FAEEDA; border-color: #854F0B; color: #854F0B; }
+.apport-cat-btn.active.c-boisson  { background: #E6F1FB; border-color: #185FA5; color: #185FA5; }
+.apport-cat-btn.active.c-vaisselle{ background: #F5EEF8; border-color: #7D3C98; color: #7D3C98; }
+.apport-cat-btn.active.c-music    { background: #EEEDFE; border-color: #534AB7; color: #534AB7; }
+
+.apport-fields { display: grid; grid-template-columns: 1fr 110px; gap: 10px; margin-top: 4px; }
+.apport-fields label { display: block; font-size: 12px; color: var(--color-text-secondary,#666); margin-bottom: 5px; }
+.apport-fields input {
+  width: 100%; padding: 9px 12px; font-size: 14px;
+  background: #fff; border: 1.5px solid #c8c8c8;
+  border-radius: 8px; color: #1a1a18; font-family: inherit; outline: none; transition: border-color 0.15s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+.apport-fields input:focus { border-color: #639922; box-shadow: 0 0 0 2px rgba(99,153,34,0.15); }
+
+.add-apport-btn {
+  width: 100%; padding: 11px; border: 2px solid #639922;
+  border-radius: 8px; background: #EAF3DE; color: #3B6D11;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; margin-top: 4px;
+}
+.add-apport-btn:hover { background: #3B6D11; color: #fff; border-color: #3B6D11; }
+
+.portions-total {
+  display: flex; align-items: center; gap: 8px; margin-top: 10px;
+  padding: 9px 13px; background: #EAF3DE; border-radius: 8px;
+  font-size: 13px; color: #3B6D11;
+}
+
+/* ── SUBMIT ───────────────────────────────────────────────── */
+.submit-btn {
+  width: 100%; padding: 13px; background: #3B6D11; color: white;
+  border: none; border-radius: 8px; font-size: 15px; font-weight: 500;
+  cursor: pointer; margin-top: 1rem; transition: background 0.15s; font-family: inherit;
+}
+.submit-btn:hover { background: #27500A; }
+.submit-btn:disabled { background: #999; cursor: not-allowed; }
+
+.err-msg {
+  background: #FCEBEB; border: 0.5px solid #F7C1C1; border-radius: 8px;
+  padding: 10px 14px; font-size: 13px; color: #A32D2D; margin-top: 10px; display: none;
+}
+
+/* ── SUCCESS ──────────────────────────────────────────────── */
+.success-msg { display: none; text-align: center; padding: 1.5rem; }
+
+/* ── TABLE ────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 10px; color: var(--color-text-secondary,#666); font-weight: 500; border-bottom: 0.5px solid var(--color-border-tertiary,#e0ded6); }
+td { padding: 10px 10px; border-bottom: 0.5px solid var(--color-border-tertiary,#e0ded6); color: var(--color-text-primary,#1a1a18); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+.badge-entree   { background: #EAF3DE; color: #3B6D11; }
+.badge-plat     { background: #FEF9E7; color: #B7950B; }
+.badge-dessert  { background: #FAEEDA; color: #854F0B; }
+.badge-boisson  { background: #E6F1FB; color: #185FA5; }
+.badge-vaisselle{ background: #F5EEF8; color: #7D3C98; }
+.badge-music    { background: #EEEDFE; color: #534AB7; }
+.plat-line { margin-bottom: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.portions-pill { font-size: 11px; background: var(--color-background-secondary,#f5f5f2); border-radius: 10px; padding: 2px 8px; color: var(--color-text-secondary,#666); }
+.empty-state, .loading-state { text-align: center; padding: 2rem; color: var(--color-text-secondary,#666); font-size: 14px; }
+
+/* ── INFOS ────────────────────────────────────────────────── */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.info-item { background: var(--color-background-secondary,#f5f5f2); border-radius: 8px; padding: 1rem; }
+.info-item-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.info-item-text  { font-size: 12px; color: var(--color-text-secondary,#666); line-height: 1.5; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .metrics { grid-template-columns: repeat(2,1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .cat-grid-big { grid-template-columns: repeat(2,1fr); }
+  .apport-cat-grid { grid-template-columns: repeat(3,1fr); }
+  .apport-fields { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="app">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Résidence — 29 mai 2025</div>
+    <h1>Fête des Voisins 🌿</h1>
+    <p class="sub">Patio / Cour intérieure · À partir de 18h30</p>
+    <div class="countdown">
+      <div class="cd-item"><span class="cd-num" id="cd-j">—</span><span class="cd-label">Jours</span></div>
+      <div class="cd-item"><span class="cd-num" id="cd-h">—</span><span class="cd-label">Heures</span></div>
+      <div class="cd-item"><span class="cd-num" id="cd-m">—</span><span class="cd-label">Min</span></div>
+    </div>
+  </div>
+
+  <!-- MÉTRIQUES -->
+  <div class="metrics">
+    <div class="metric"><div class="metric-num" id="m-adultes">—</div><div class="metric-label">Adultes</div></div>
+    <div class="metric"><div class="metric-num" id="m-enfants">—</div><div class="metric-label">Enfants</div></div>
+    <div class="metric"><div class="metric-num" id="m-portions">—</div><div class="metric-label">Portions couvertes</div></div>
+    <div class="metric"><div class="metric-num" id="m-plats">—</div><div class="metric-label">Plats & boissons</div></div>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Je participe !</div>
+    <div id="form-content">
+
+      <!-- Nom / Appt -->
+      <div class="form-row">
+        <div class="field"><label>Prénom et nom</label><input type="text" id="f-nom" placeholder="Marie Dupont" /></div>
+        <div class="field"><label>Appartement / Bâtiment</label><input type="text" id="f-appt" placeholder="Bât. A — Apt. 12" /></div>
+      </div>
+
+      <!-- PARTICIPATION OUI/NON -->
+      <div class="field" style="margin-bottom:0">
+        <label>Participez-vous ?&thinsp;*</label>
+      </div>
+      <div class="attend-toggle" style="margin-top:6px;">
+        <button class="attend-btn" id="btn-yes" onclick="setAttend('yes')">✅&nbsp; Oui, je viens !</button>
+        <button class="attend-btn" id="btn-no"  onclick="setAttend('no')">❌&nbsp; Je ne pourrai pas</button>
+      </div>
+
+      <!-- SECTION OUI (masquée par défaut) -->
+      <div id="yes-section" style="display:none">
+
+        <!-- Compteurs adultes / enfants -->
+        <div class="count-row">
+          <div class="count-box">
+            <span class="count-lbl">👨‍👩‍👦&nbsp; Adultes</span>
+            <div class="count-ctrl">
+              <button class="count-btn" onclick="adj('adultes',-1)">−</button>
+              <span class="count-val" id="v-adultes">1</span>
+              <button class="count-btn" onclick="adj('adultes',1)">+</button>
+            </div>
+          </div>
+          <div class="count-box">
+            <span class="count-lbl">👶&nbsp; Enfants</span>
+            <div class="count-ctrl">
+              <button class="count-btn" onclick="adj('enfants',-1)">−</button>
+              <span class="count-val" id="v-enfants">0</span>
+              <button class="count-btn" onclick="adj('enfants',1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ce que j'apporte -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:14px;font-weight:500;margin-bottom:12px;color:var(--color-text-primary,#1a1a18);">Ce que j'apporte</div>
+          <div id="apports-container"></div>
+          <button class="add-apport-btn" onclick="addApport()">+ Ajouter un autre apport</button>
+          <div class="portions-total" id="portions-total" style="display:none;">
+            Total : <strong id="portions-count" style="font-weight:500;">0 portion</strong> couvertes par vos apports
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="form-row full">
+          <div class="field"><label>Message pour les voisins (optionnel)</label><textarea id="f-msg" placeholder="Un mot sympa ? Une question ? On veut lire !"></textarea></div>
+        </div>
+
+      </div><!-- /yes-section -->
+
+      <div class="err-msg" id="err-msg"></div>
+      <button class="submit-btn" id="submit-btn" onclick="submitForm()">Confirmer ma participation →</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-msg" id="success-msg">
+      <div style="font-size:36px">🎉</div>
+      <h3 style="font-weight:500;margin:8px 0 4px;">C'est noté, merci !</h3>
+      <p style="color:var(--color-text-secondary,#666);font-size:14px;">Votre participation a bien été enregistrée.<br>Rendez-vous le <strong>29 mai</strong> dans le patio !</p>
+      <button onclick="editResponse()" style="margin-top:1rem;padding:8px 20px;border:1.5px solid #ccc;border-radius:8px;background:transparent;color:var(--color-text-primary,#1a1a18);cursor:pointer;font-size:13px;font-family:inherit;">✏️ Modifier ma réponse</button>
+    </div>
+  </div>
+
+  <!-- QUI VIENT -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Qui vient ? <span id="last-refresh" style="font-size:12px;font-weight:400;color:var(--color-text-secondary,#666);margin-left:4px;"></span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Voisin</th><th>Appt.</th><th style="text-align:center">Adultes</th><th style="text-align:center">Enfants</th><th>Ce qu'il·elle apporte</th></tr></thead>
+        <tbody id="table-body"><tr><td colspan="5" class="loading-state">Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INFOS PRATIQUES -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Infos pratiques</div>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-item-title">📍 Lieu</div><div class="info-item-text">Patio / Cour intérieure de la résidence.</div></div>
+      <div class="info-item"><div class="info-item-title">🕕 Horaires</div><div class="info-item-text">À partir de 18h30. Venez comme vous êtes !</div></div>
+      <div class="info-item"><div class="info-item-title">🪑 Tables & chaises</div><div class="info-item-text">Demande en cours auprès de la Mairie. Prévoyez de ramener les vôtres le cas échéant.</div></div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+var BASE_ID  = 'appoLdoUjBBSBITRo';
+var TABLE_ID = 'tbl3vraEgCeoBg4Ks';
+var TOKEN    = 'pat0Yinq3uGIv4tZJ.ca79c6939fb3c3d4d51bc0ec2542bdf4934bd577d7134257ef510f3f41b943d3';
+var API      = 'https://api.airtable.com/v0/' + BASE_ID + '/' + TABLE_ID;
+var SK       = 'fete_voisins_v6';
+
+// Catégories — 6 au total en grille 3×2
+var CATS = [
+  { key:'entree',    ico:'🥗', lbl:'Entrée / Salade',     ph:'Ex : salade niçoise, tapenade…',    cls:'c-entree',    badge:'badge-entree'    },
+  { key:'plat',      ico:'🍽️', lbl:'Plat',                ph:'Ex : quiche, gratin, tajine…',       cls:'c-plat',      badge:'badge-plat'      },
+  { key:'dessert',   ico:'🍰', lbl:'Dessert / Gâteau',    ph:'Ex : tarte aux fruits, brownies…',  cls:'c-dessert',   badge:'badge-dessert'   },
+  { key:'boisson',   ico:'🥂', lbl:'Boissons',            ph:'Ex : vin blanc, limonade…',          cls:'c-boisson',   badge:'badge-boisson'   },
+  { key:'vaisselle', ico:'🥄', lbl:'Vaisselle / Couverts',ph:'Ex : assiettes, verres, couverts…', cls:'c-vaisselle', badge:'badge-vaisselle' },
+  { key:'music',     ico:'✨', lbl:'Autres',               ph:'Ex : pain, fromages, déco, jeux…',   cls:'c-music',     badge:'badge-music'     },
+];
+
+// ── STATE ─────────────────────────────────────────────────
+var attendance    = null;          // 'yes' | 'no' | null
+var counts        = { adultes:1, enfants:0 };
+var apports       = [];
+var apportCounter = 0;
+var currentRecordId = null;        // ID Airtable pour PATCH
+
+// ── INIT ──────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function() {
+  updateCountdown(); setInterval(updateCountdown, 30000);
+  loadParticipants(); setInterval(loadParticipants, 60000);
+
+  // Restaurer session
+  try {
+    var saved = localStorage.getItem(SK);
+    if (saved) {
+      var d = JSON.parse(saved);
+      currentRecordId = d.recordId || null;
+      restoreAndShowSuccess(d);
+    }
+  } catch(e) { localStorage.removeItem(SK); }
+});
+
+// ── ATTENDANCE ────────────────────────────────────────────
+function setAttend(val) {
+  attendance = val;
+  document.getElementById('btn-yes').className = 'attend-btn' + (val==='yes' ? ' active-yes' : '');
+  document.getElementById('btn-no').className  = 'attend-btn' + (val==='no'  ? ' active-no'  : '');
+  var ys = document.getElementById('yes-section');
+  if (val === 'yes') {
+    ys.style.display = 'block';
+    if (apports.length === 0) addApport();
+  } else {
+    ys.style.display = 'none';
+  }
+}
+
+// ── COUNTERS ──────────────────────────────────────────────
+function adj(key, delta) {
+  var min = key==='adultes' ? 1 : 0;
+  counts[key] = Math.max(min, counts[key] + delta);
+  document.getElementById('v-'+key).textContent = counts[key];
+}
+
+// ── APPORTS ───────────────────────────────────────────────
+function addApport() {
+  apports.push({ id: ++apportCounter, cat:'', detail:'', portions:0 });
+  renderApports();
+}
+function removeApport(id) {
+  apports = apports.filter(function(a){ return a.id !== id; });
+  renderApports();
+}
+function setCat(id, cat) {
+  apports.forEach(function(a){ if(a.id===id) a.cat = cat; });
+  renderApports();
+}
+function updateField(id, field, val) {
+  apports.forEach(function(a){ if(a.id===id) a[field] = val; });
+  updatePortionsTotal();
+}
+
+function renderApports() {
+  var c = document.getElementById('apports-container');
+  c.innerHTML = '';
+  apports.forEach(function(a, idx) {
+    var catBtns = CATS.map(function(cat) {
+      var active = a.cat===cat.key ? 'active '+cat.cls : '';
+      return '<button class="apport-cat-btn '+active+'" onclick="setCat('+a.id+',\''+cat.key+'\')">'
+        +'<span class="btn-ico">'+cat.ico+'</span>'
+        +'<span>'+cat.lbl+'</span>'
+        +'</button>';
+    }).join('');
+    var ph = a.cat ? (CATS.find(function(c){return c.key===a.cat;})||{ph:'Description…'}).ph : 'Description…';
+    var div = document.createElement('div');
+    div.className = 'apport-block';
+    div.innerHTML =
+      '<div class="apport-header">'
+      +'<span class="apport-label">Apport '+(idx+1)+'</span>'
+      +(apports.length>1 ? '<button class="remove-apport" onclick="removeApport('+a.id+')">✕</button>' : '')
+      +'</div>'
+      +'<div class="apport-cat-grid">'+catBtns+'</div>'
+      +'<div class="apport-fields">'
+      +'<div><label>Description</label><input type="text" placeholder="'+ph+'" value="'+esc(a.detail)+'" oninput="updateField('+a.id+',\'detail\',this.value)" /></div>'
+      +'<div><label>Pour combien ?</label><input type="number" min="0" max="60" placeholder="pers." value="'+(a.portions||'')+'" oninput="updateField('+a.id+',\'portions\',+this.value)" /></div>'
+      +'</div>';
+    c.appendChild(div);
+  });
+  updatePortionsTotal();
+}
+
+function updatePortionsTotal() {
+  var total = apports.reduce(function(s,a){ return s+(+a.portions||0); }, 0);
+  var el = document.getElementById('portions-total');
+  if (apports.length > 0) {
+    el.style.display = 'flex';
+    document.getElementById('portions-count').textContent = total+' portion'+(total>1?'s':'');
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ── SUBMIT ────────────────────────────────────────────────
+async function submitForm() {
+  var btn   = document.getElementById('submit-btn');
+  var errEl = document.getElementById('err-msg');
+  errEl.style.display = 'none';
+
+  var nom  = document.getElementById('f-nom').value.trim();
+  var appt = document.getElementById('f-appt').value.trim();
+  var msg  = document.getElementById('f-msg').value.trim();
+
+  if (!nom)        { errEl.textContent='Merci d\'indiquer votre nom.'; errEl.style.display='block'; return; }
+  if (!attendance) { errEl.textContent='Merci d\'indiquer si vous participez.'; errEl.style.display='block'; return; }
+
+  btn.disabled = true; btn.textContent = 'Envoi en cours…';
+
+  var fields = {};
+  fields['Nom'] = nom;
+  if (appt) fields['Appartement'] = appt;
+
+  if (attendance === 'yes') {
+    fields['Adultes'] = counts.adultes;
+    fields['Enfants'] = counts.enfants;
+
+    var platsStr = apports.map(function(a) {
+      var cat = CATS.find(function(c){ return c.key===a.cat; });
+      var parts = [];
+      if (cat)     parts.push(cat.lbl);
+      if (a.detail) parts.push(a.detail);
+      if (a.portions) parts.push('('+a.portions+' pers.)');
+      return parts.join(' — ');
+    }).filter(Boolean).join(' | ');
+
+    var totalPortions = apports.reduce(function(s,a){ return s+(+a.portions||0); }, 0);
+    if (platsStr)      fields['Plats']    = platsStr;
+    if (totalPortions) fields['Portions'] = totalPortions;
+    if (msg)           fields['Message']  = msg;
+  }
+
+  try {
+    var resp, record;
+    if (currentRecordId) {
+      // PATCH — mise à jour de l'enregistrement existant
+      resp = await fetch(API + '/' + currentRecordId, {
+        method: 'PATCH',
+        headers: { 'Authorization':'Bearer '+TOKEN, 'Content-Type':'application/json' },
+        body: JSON.stringify({ fields: fields })
+      });
+      if (!resp.ok) { var e=await resp.json().catch(function(){return{};}); throw new Error((e.error&&e.error.message)||'HTTP '+resp.status); }
+      record = await resp.json();
+    } else {
+      // POST — nouvel enregistrement (Airtable retourne {id, fields, ...} directement)
+      resp = await fetch(API, {
+        method: 'POST',
+        headers: { 'Authorization':'Bearer '+TOKEN, 'Content-Type':'application/json' },
+        body: JSON.stringify({ fields: fields })
+      });
+      var postData = await resp.json();
+      if (!resp.ok) { throw new Error((postData.error&&postData.error.message)||'HTTP '+resp.status); }
+      record = postData;
+    }
+
+    currentRecordId = record.id;
+
+    // Sauvegarder en localStorage pour "Modifier"
+    var payload = {
+      recordId: record.id, nom: nom, appt: appt, attendance: attendance,
+      adultes: counts.adultes, enfants: counts.enfants,
+      apports: apports, msg: msg
+    };
+    localStorage.setItem(SK, JSON.stringify(payload));
+
+    document.getElementById('form-content').style.display = 'none';
+    document.getElementById('success-msg').style.display  = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Confirmer ma participation →';
+    loadParticipants();
+  } catch(e) {
+    errEl.textContent = 'Erreur : ' + e.message;
+    errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Confirmer ma participation →';
+  }
+}
+
+// ── MODIFIER — rouvre le formulaire pré-rempli ────────────
+function editResponse() {
+  var saved = localStorage.getItem(SK);
+  if (!saved) return;
+  var d = JSON.parse(saved);
+
+  document.getElementById('success-msg').style.display  = 'none';
+  document.getElementById('form-content').style.display = 'block';
+  document.getElementById('err-msg').style.display      = 'none';
+
+  // Remplir champs texte
+  document.getElementById('f-nom').value  = d.nom  || '';
+  document.getElementById('f-appt').value = d.appt || '';
+  document.getElementById('f-msg').value  = d.msg  || '';
+
+  // Présence
+  if (d.attendance) setAttend(d.attendance);
+
+  // Compteurs
+  counts.adultes = parseInt(d.adultes) || 1;
+  counts.enfants = parseInt(d.enfants) || 0;
+  document.getElementById('v-adultes').textContent = counts.adultes;
+  document.getElementById('v-enfants').textContent = counts.enfants;
+
+  // Apports
+  apports = (d.apports || []).map(function(a) {
+    return { id: ++apportCounter, cat: a.cat||'', detail: a.detail||'', portions: a.portions||0 };
+  });
+  if (apports.length === 0) addApport();
+  else renderApports();
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = false;
+  btn.textContent = 'Mettre à jour ma participation →';
+  document.getElementById('form-content').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── RESTORE AU CHARGEMENT ─────────────────────────────────
+function restoreAndShowSuccess(d) {
+  if (d.attendance) { attendance = d.attendance; }
+  counts.adultes = parseInt(d.adultes) || 1;
+  counts.enfants = parseInt(d.enfants) || 0;
+  apports = (d.apports || []).map(function(a) {
+    return { id: ++apportCounter, cat:a.cat||'', detail:a.detail||'', portions:a.portions||0 };
+  });
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('success-msg').style.display  = 'block';
+}
+
+// ── PARTICIPANTS ──────────────────────────────────────────
+async function loadParticipants() {
+  try {
+    var resp = await fetch(API+'?sort[0][field]=Nom&sort[0][direction]=asc', {
+      headers:{ 'Authorization':'Bearer '+TOKEN }
+    });
+    var data = await resp.json();
+    var records = data.records || [];
+    renderTable(records);
+    renderMetrics(records);
+    var now = new Date();
+    document.getElementById('last-refresh').textContent = '— mis à jour à '+now.getHours()+'h'+String(now.getMinutes()).padStart(2,'0');
+  } catch(e) {
+    document.getElementById('table-body').innerHTML = '<tr><td colspan="5" class="empty-state">Impossible de charger les données.</td></tr>';
+  }
+}
+
+function renderTable(records) {
+  var tbody = document.getElementById('table-body');
+  if (!records.length) { tbody.innerHTML='<tr><td colspan="5" class="empty-state">Soyez le premier à vous inscrire !</td></tr>'; return; }
+  tbody.innerHTML = records.map(function(r) {
+    var f = r.fields;
+    var platsHtml = '—';
+    if (f['Plats']) {
+      platsHtml = f['Plats'].split('|').map(function(seg) {
+        seg = seg.trim(); if (!seg) return '';
+        var matchedCat = null;
+        CATS.forEach(function(cat) { if (seg.indexOf(cat.lbl)===0) matchedCat=cat; });
+        var badge  = matchedCat ? '<span class="badge '+matchedCat.badge+'">'+matchedCat.lbl+'</span>' : '';
+        var portM  = seg.match(/\((\d+) pers\.\)/);
+        var port   = portM ? '<span class="portions-pill">'+portM[1]+' pers.</span>' : '';
+        var catPfx = matchedCat ? matchedCat.lbl+' — ' : '';
+        var detail = seg.replace(catPfx,'').replace(/ — \(\d+ pers\.\)/,'').replace(/\(\d+ pers\.\)/,'').trim();
+        var detHtml = detail ? '<span style="color:var(--color-text-secondary,#666);font-size:12px;">'+esc(detail)+'</span>' : '';
+        return '<div class="plat-line">'+(badge||'<span style="color:var(--color-text-secondary,#666)">'+esc(seg)+'</span>')+port+detHtml+'</div>';
+      }).join('');
+    }
+    return '<tr>'
+      +'<td><strong style="font-weight:500">'+esc(f['Nom']||'—')+'</strong>'+(f['Message']?'<div style="font-size:12px;color:var(--color-text-secondary,#666);margin-top:3px;font-style:italic;">'+esc(f['Message'])+'</div>':'')+'</td>'
+      +'<td>'+(f['Appartement']?esc(f['Appartement']):'—')+'</td>'
+      +'<td style="text-align:center">'+(f['Adultes']||0)+'</td>'
+      +'<td style="text-align:center">'+((f['Enfants']||0)>0?f['Enfants']:'—')+'</td>'
+      +'<td>'+platsHtml+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+function renderMetrics(records) {
+  var tA = records.reduce(function(s,r){ return s+(r.fields['Adultes']||0); }, 0);
+  var tE = records.reduce(function(s,r){ return s+(r.fields['Enfants']||0); }, 0);
+  var tP = records.reduce(function(s,r){ return s+(r.fields['Portions']||0); }, 0);
+  var plats = records.map(function(r){ return r.fields['Plats']||''; }).join('|').split('|').filter(function(s){ return s.trim(); });
+  document.getElementById('m-adultes').textContent = tA;
+  document.getElementById('m-enfants').textContent = tE;
+  document.getElementById('m-portions').textContent = tP;
+  document.getElementById('m-plats').textContent = plats.length;
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateCountdown() {
+  var diff = new Date('2025-05-29T18:30:00') - new Date();
+  if (diff <= 0) { ['cd-j','cd-h','cd-m'].forEach(function(id){ document.getElementById(id).textContent='0'; }); return; }
+  document.getElementById('cd-j').textContent = Math.floor(diff/86400000);
+  document.getElementById('cd-h').textContent = Math.floor((diff%86400000)/3600000);
+  document.getElementById('cd-m').textContent = Math.floor((diff%3600000)/60000);
+}
+</script>
+</html>
