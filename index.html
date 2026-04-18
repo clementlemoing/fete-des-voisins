@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -463,7 +462,9 @@ function renderApports() {
       +'<div class="apport-cat-grid">'+catBtns+'</div>'
       +'<div class="apport-fields">'
       +'<div><label>Description</label><input type="text" placeholder="'+ph+'" value="'+esc(a.detail)+'" oninput="updateField('+a.id+',\'detail\',this.value)" /></div>'
-      +'<div><label>Pour combien ?</label><input type="number" min="0" max="60" placeholder="pers." value="'+(a.portions||'')+'" oninput="updateField('+a.id+',\'portions\',+this.value)" /></div>'
+      +(a.cat==='boisson'
+        ? '<div><label>Nb de bouteilles</label><input type="number" min="0" max="60" placeholder="bouteilles" value="'+(a.portions||'')+'" oninput="updateField('+a.id+',\'portions\',+this.value)" /></div>'
+        : '<div><label>Pour combien ?</label><input type="number" min="0" max="60" placeholder="pers." value="'+(a.portions||'')+'" oninput="updateField('+a.id+',\'portions\',+this.value)" /></div>')
       +'</div>';
     c.appendChild(div);
   });
@@ -643,7 +644,8 @@ function renderTable(records) {
         CATS.forEach(function(cat) { if (seg.indexOf(cat.lbl)===0) matchedCat=cat; });
         var badge  = matchedCat ? '<span class="badge '+matchedCat.badge+'">'+matchedCat.lbl+'</span>' : '';
         var portM  = seg.match(/\((\d+) pers\.\)/);
-        var port   = portM ? '<span class="portions-pill">'+portM[1]+' pers.</span>' : '';
+        var portUnit = matchedCat && matchedCat.key==='boisson' ? 'bout.' : 'pers.';
+        var port   = portM ? '<span class="portions-pill">'+portM[1]+' '+portUnit+'</span>' : '';
         var catPfx = matchedCat ? matchedCat.lbl+' — ' : '';
         var detail = seg.replace(catPfx,'').replace(/ — \(\d+ pers\.\)/,'').replace(/\(\d+ pers\.\)/,'').trim();
         var detHtml = detail ? '<span style="color:var(--color-text-secondary,#666);font-size:12px;">'+esc(detail)+'</span>' : '';
