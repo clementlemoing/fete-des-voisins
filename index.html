@@ -210,20 +210,21 @@ body {
 .success-msg { display: none; text-align: center; padding: 1.5rem; }
 
 /* ── TABLE ────────────────────────────────────────────────── */
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; padding: 8px 10px; color: var(--color-text-secondary,#666); font-weight: 500; border-bottom: 0.5px solid var(--color-border-tertiary,#e0ded6); }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+th { text-align: left; padding: 8px 10px; color: var(--color-text-secondary,#666); font-weight: 500; border-bottom: 0.5px solid var(--color-border-tertiary,#e0ded6); white-space: nowrap; }
 td { padding: 10px 10px; border-bottom: 0.5px solid var(--color-border-tertiary,#e0ded6); color: var(--color-text-primary,#1a1a18); vertical-align: top; }
 tr:last-child td { border-bottom: none; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; white-space: nowrap; }
 .badge-entree   { background: #EAF3DE; color: #3B6D11; }
 .badge-plat     { background: #FEF9E7; color: #B7950B; }
 .badge-dessert  { background: #FAEEDA; color: #854F0B; }
 .badge-boisson  { background: #E6F1FB; color: #185FA5; }
 .badge-vaisselle{ background: #F5EEF8; color: #7D3C98; }
 .badge-music    { background: #EEEDFE; color: #534AB7; }
-.plat-line { margin-bottom: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.portions-pill { font-size: 11px; background: var(--color-background-secondary,#f5f5f2); border-radius: 10px; padding: 2px 8px; color: var(--color-text-secondary,#666); }
+.plat-line { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; white-space: nowrap; margin-bottom: 4px; }
+.plat-line:last-child { margin-bottom: 0; }
+.portions-pill { font-size: 11px; background: var(--color-background-secondary,#f5f5f2); border-radius: 10px; padding: 2px 8px; color: var(--color-text-secondary,#666); white-space: nowrap; }
 .empty-state, .loading-state { text-align: center; padding: 2rem; color: var(--color-text-secondary,#666); font-size: 14px; }
 
 /* ── INFOS ────────────────────────────────────────────────── */
@@ -247,7 +248,7 @@ tr:last-child td { border-bottom: none; }
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-badge">Résidence — 29 mai 2025</div>
+    <div class="hero-badge">4 rue de l'ouest — 29 mai 2026</div>
     <h1>Fête des Voisins 🌿</h1>
     <p class="sub">Patio / Cour intérieure · À partir de 18h30</p>
     <div class="countdown">
@@ -267,7 +268,6 @@ tr:last-child td { border-bottom: none; }
 
   <!-- FORMULAIRE -->
   <div class="card">
-    <div class="card-title"><span class="dot"></span> Je participe !</div>
     <div id="form-content">
 
       <!-- Nom / Appt -->
@@ -673,7 +673,7 @@ function renderMetrics(records) {
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function updateCountdown() {
-  var diff = new Date('2025-05-29T18:30:00') - new Date();
+  var diff = new Date('2026-05-29T18:30:00') - new Date();
   if (diff <= 0) { ['cd-j','cd-h','cd-m'].forEach(function(id){ document.getElementById(id).textContent='0'; }); return; }
   document.getElementById('cd-j').textContent = Math.floor(diff/86400000);
   document.getElementById('cd-h').textContent = Math.floor((diff%86400000)/3600000);
